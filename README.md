@@ -2,4 +2,4 @@
 
 Springboot and React Project
 
-use ```.\mvnw spring-boot:run``` to run backend
+cd to ```user-account-service ``` use ```.\mvnw spring-boot:run``` to run backend
