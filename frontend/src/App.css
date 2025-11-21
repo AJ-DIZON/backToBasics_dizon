@@ -1,5 +1,7 @@
 .App {
   text-align: center;
+  position: relative;
+  min-height: 100vh;
 }
 
 /* Centering helper used by UserList */
@@ -114,3 +116,32 @@ th {
 tr:nth-child(even){background-color: #f2f2f2;}
 
 tr:hover {background-color: #ddd;}
+
+h1 {
+  font-size: 70px;
+  font-weight: 500;
+  color: #000000;
+  margin-bottom: 3px;
+}
+
+button {
+  display: inline-block;
+  padding: 12px 24px;
+  border: 1px solid #4f4f4f;
+  border-radius: 4px;
+  transition: all 0.2s ease-in;
+  position: relative;
+  overflow: hidden;
+  font-size: 15px;
+  cursor: pointer;
+  color: black;
+  z-index: 1;
+}
+
+.user-form-container {
+  position:static;
+  z-index: 50;
+  background: #6b9aff;
+  padding: 1% 10px;
+}
+

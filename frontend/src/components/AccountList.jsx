@@ -1,12 +1,5 @@
 import { getUserAccounts, deleteUserAccount } from '../services/api';
-import React, { useEffect, useState, useRef } from 'react';
-
-// const accounts = [
-//     {id: 1, userid: 1, accountNumber: "1234567890", balance: "100", type: "Checking"},
-//     {id: 2, userid: 1, accountNumber: "0987654321", balance: "200", type: "Savings"},
-//     {id: 3, userid: 2, accountNumber: "1234567890", balance: "100", type: "Checking"},
-//     {id: 4, userid: 2, accountNumber: "0987654321", balance: "200", type: "Savings"},
-// ];
+import { useEffect, useState, useRef } from 'react';
 
 function AccountList({ userId, onBack }) {
 
@@ -15,10 +8,13 @@ function AccountList({ userId, onBack }) {
     const [message, setMessage] = useState('');
     const timerRef = useRef(null);
 
-    const fetchAccounts = (id) => {
-        getUserAccounts(id)
-            .then(response => setAccounts(response.data))
-            .catch(error => console.error(error));
+    const fetchAccounts = async (id) => {
+        try {
+            const response = await getUserAccounts(id);
+            setAccounts(response.data);
+        } catch (error) {
+            console.error('Failed to fetch accounts:', error);
+        }
     };
 
     const deleteAccount = async (accountId) => {

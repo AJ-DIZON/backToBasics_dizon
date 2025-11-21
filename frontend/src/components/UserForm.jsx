@@ -1,6 +1,5 @@
-import { addUser, getUsers } from '../services/api';
+import { addUser} from '../services/api';
 import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
 import Modal from './Modal';
 
 function UserForm({ onUserCreated }) {
@@ -47,7 +46,7 @@ function UserForm({ onUserCreated }) {
         setMessage('');
 
         try {
-            addUser(formData);
+            await addUser(formData);
             setMessage('User created successfully!');
             console.log(formData.data);
 
@@ -82,10 +81,8 @@ function UserForm({ onUserCreated }) {
     }
 
     return (
-    <div>
-    <h1>User Form</h1>
-
-    <button onClick={() => setIsModalOpen(true)}>Create New User</button>
+    <div className="user-form-container">
+    <button onClick={() => setIsModalOpen(true)} style={{position:"absolute", top:"16px", right:"16px"}}>Create New User</button>
     
     {isModalOpen && <Modal title="Create New User" isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
         <p>

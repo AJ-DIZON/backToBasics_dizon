@@ -1,9 +1,8 @@
-import logo from './logo.svg';
 import './App.css';
 import UserList from './components/UserList';
 import AccountList from './components/AccountList';
 import UserForm from './components/UserForm';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -14,9 +13,13 @@ function App() {
 
   return (
     <div className="App">
+
+      <div className="user-form-container">
+        <UserForm onUserCreated={handleUserCreated} />
+      </div>
+      
       <UserList refreshKey={refreshKey} />
-      <UserForm onUserCreated={handleUserCreated} />
-      <AccountList userId={selectedAccountUserId} onBack={() => setSelectedAccountUserId(null)} />
+
     </div>
   );
 }

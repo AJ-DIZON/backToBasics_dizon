@@ -1,36 +1,27 @@
-import { getUsers, addAccountForUser } from '../services/api';
+import { getUsers, addAccountForUser, deleteUser } from '../services/api';
 import React, { useEffect, useState } from 'react';
 import Modal from './Modal';
-import axios from 'axios';
 import AccountList from './AccountList';
-
-// const users = [
-//   {id: 1, name: "John", email: "john@email.com", phone: "123-456-7890"},
-//   {id: 2, name: "Jane", email: "jane@email.com", phone: "987-654-3210"},
-//   {id: 3, name: "Bob", email: "bob@email.com", phone: "555-555-5555"},
-// ]
 
 function UserList({ refreshKey }) {
   const [users, setUsers] = useState([]);
+  const [formAccount, setFormAccount] = useState({ balance: '', type: 'Checking' });  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedAccountUserId, setSelectedAccountUserId] = useState(null);
-  const [formAccount, setFormAccount] = useState({ balance: '', type: 'Checking' });
+  
+  const [message, setMessage] = useState('');
 
   const fetchUsers = () => {  
     getUsers()
       .then(response => {
         console.log('API Response:', response);
-        // Handle both array and object with users property
         const userData = Array.isArray(response.data) ? response.data : response.data.users || response.data;
         setUsers(userData);
       })
       .catch(error => console.error('Error fetching users:', error));
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, [refreshKey]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,10 +29,51 @@ function UserList({ refreshKey }) {
   };
 
   const openAddAccountModal = (userId) => {
+
     setSelectedUserId(userId);
     setFormAccount({ balance: '', type: 'Checking' });
     setIsModalOpen(true);
+
   };
+
+  const handleAddAccount = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    
+    try{
+      if(formAccount.balance && formAccount.type){
+
+        await addAccountForUser(selectedUserId, formAccount);
+        setIsModalOpen(false);
+        setSelectedUserId(null);
+        setFormAccount({ balance: '', type: 'Checking' });
+        setMessage('Account created successfully!');
+
+        setSelectedAccountUserId(selectedUserId);
+
+        
+      }else{
+        setMessage('Please fill in all fields');
+      }
+    }catch(error){
+      console.error("Error fetching accounts: " + error);
+      setMessage('Error fetching accounts');
+    }
+  }
+
+  const handleDeleteUser = async (userId) => {
+    setMessage('');
+    
+    try {
+      await deleteUser(userId);
+      fetchUsers();
+      setMessage('User deleted successfully!');
+
+    }catch(error){
+      console.error("Error deleting user: " + error);
+      setMessage('Error deleting user');
+    }
+  }
 
   //map users to display in table
   const listOfUsers = users.map(user => (
@@ -57,12 +89,14 @@ function UserList({ refreshKey }) {
         <button onClick={() => setSelectedAccountUserId(user.id)}>View Accounts</button>
       </td>
       <td>
-        {/* delete user and all accounts */}
-        <button onClick={() => console.log('Delete user', user.id)}>Delete User</button>
+        <button onClick={() => handleDeleteUser(user.id)}>Delete User</button>
       </td>
     </tr>
   ));
 
+  useEffect(() => {
+    fetchUsers();
+  }, [refreshKey]);
   return (
     <div className="center">
       <h1>User List</h1>
@@ -80,6 +114,8 @@ function UserList({ refreshKey }) {
           {listOfUsers}
         </tbody>
       </table>
+
+      {message && <p style={{ color: message.includes('Error') ? 'red' : 'green' }}>{message}</p>}
 
       <AccountList userId={selectedAccountUserId} onBack={() => setSelectedAccountUserId(null)} />
 
@@ -105,9 +141,9 @@ function UserList({ refreshKey }) {
                 <option value="Time Deposits">Time Deposits</option>
               </select>
             </p>
-
+            
             <p>
-              <button type="submit">Create Account</button>
+              <button type="submit" onClick={handleAddAccount}>Create Account</button>
               <button type="button" onClick={() => setIsModalOpen(false)} style={{ marginLeft: 8 }}>Cancel</button>
             </p>
           </form>
